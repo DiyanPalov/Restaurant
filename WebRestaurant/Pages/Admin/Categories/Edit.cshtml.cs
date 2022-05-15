@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Restaurant.DataAccess.Data;
+using Restaurant.DataAccess.Repository.IRepository;
 using Restaurant.Models;
 
 namespace WebRestaurant.Pages.Admin.Categories
@@ -8,18 +9,18 @@ namespace WebRestaurant.Pages.Admin.Categories
     [BindProperties]
     public class EditModel : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
         public Category Category { get; set; }
 
-        public EditModel(ApplicationDbContext db)
+        public EditModel(IUnitOfWork unitOfWork)
         {
-            _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public void OnGet(int id)
         {
-            Category = _db.Category.Find(id);
+            Category = _unitOfWork.Category.GetFirstOrDefault(u => u.Id == id);
         }
 
         public async Task<IActionResult> OnPost()
@@ -30,8 +31,8 @@ namespace WebRestaurant.Pages.Admin.Categories
             }
             if (ModelState.IsValid)
             {
-                 _db.Category.Update(Category);
-                await _db.SaveChangesAsync();
+                _unitOfWork.Category.Update(Category);
+                _unitOfWork.Save();
                 TempData["success"] = "Category updated successfully";
                 return RedirectToPage("Index");
             }
