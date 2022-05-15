@@ -3,37 +3,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Restaurant.DataAccess.Data;
 using Restaurant.Models;
 
-namespace WebRestaurant.Pages.Categories
+namespace WebRestaurant.Pages.Admin.Categories
 {
     [BindProperties]
-    public class DeleteModel : PageModel
+    public class CreateModel : PageModel
     {
         private readonly ApplicationDbContext _db;
 
         public Category Category { get; set; }
 
-        public DeleteModel(ApplicationDbContext db)
+        public CreateModel(ApplicationDbContext db)
         {
             _db = db;
         }
 
-        public void OnGet(int id)
+        public void OnGet()
         {
-            Category = _db.Category.Find(id);
         }
 
         public async Task<IActionResult> OnPost()
         {
-            var categoryFromDb = _db.Category.Find(Category.Id);
-            if (categoryFromDb != null)
+            if (Category.Name == Category.DisplayOrder.ToString())
             {
-                _db.Category.Remove(categoryFromDb);
-                await _db.SaveChangesAsync();
-                TempData["success"] = "Category deleted successfully";
-                return RedirectToPage("Index");
-
+                ModelState.AddModelError("Category.Name", "The Display Order cannot exactly match the Name.");
             }
-
+            if (ModelState.IsValid)
+            {
+                await _db.Category.AddAsync(Category);
+                await _db.SaveChangesAsync();
+                TempData["success"] = "Category created successfully";
+                return RedirectToPage("Index");
+            }
             return Page();
         }
     }
