@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using WebRestaurant.Data;
+using Restaurant.DataAccess.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
