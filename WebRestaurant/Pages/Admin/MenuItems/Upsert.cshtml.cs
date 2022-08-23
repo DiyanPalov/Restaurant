@@ -12,6 +12,7 @@ namespace WebRestaurant.Pages.Admin.MenuItems;
 public class UpsertModel : PageModel
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IWebHostEnvironment _hostingEnvironment;
 
     public MenuItem MenuItem { get; set; }
 
@@ -19,9 +20,10 @@ public class UpsertModel : PageModel
 
     public IEnumerable<SelectListItem> FoodTypeList { get; set; }
 
-    public UpsertModel(IUnitOfWork unitOfWork)
+    public UpsertModel(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
     {
         _unitOfWork = unitOfWork;
+        _hostingEnvironment = hostEnvironment;
         MenuItem = new();
     }
 
@@ -42,13 +44,25 @@ public class UpsertModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-      
-        if (ModelState.IsValid)
+        string webRootPath = _hostingEnvironment.WebRootPath;
+        var files = HttpContext.Request.Form.Files;
+        if (MenuItem.Id == 0)
         {
-            _unitOfWork.FoodType.Add(FoodType);
+            string fileName_new = Guid.NewGuid().ToString();
+            var uploads = Path.Combine(webRootPath, @"images\menuItems");
+            var extension = Path.GetExtension(files[0].Name);
+
+            using (var fileStream = new FileStream(Path.Combine(uploads,fileName_new + extension), FileMode.Create))
+            {
+                files[0].CopyTo(fileStream);
+            }
+            MenuItem.Image = @"\images\menuItems\" + fileName_new + extension;
+            _unitOfWork.MenuItem.Add(MenuItem);
             _unitOfWork.Save();
-            TempData["success"] = "FoodType created successfully";
-            return RedirectToPage("Index");
+        }
+        else
+        {
+
         }
         return Page();
     }
