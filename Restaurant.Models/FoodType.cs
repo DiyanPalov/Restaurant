@@ -9,6 +9,5 @@ namespace Restaurant.Models
 
         [Required]
         public string Name { get; set; }
-
     }
 }

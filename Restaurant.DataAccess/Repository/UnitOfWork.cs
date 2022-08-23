@@ -1,11 +1,5 @@
 ﻿using Restaurant.DataAccess.Data;
 using Restaurant.DataAccess.Repository.IRepository;
-using Restaurant.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurant.DataAccess.Repository
 {
@@ -21,6 +15,7 @@ namespace Restaurant.DataAccess.Repository
 
         public ICategoryRepository Category { get; private set; }
         public IFoodTypeRepository FoodType { get; private set; }
+
         public void Dispose()
         {
             _db.Dispose();

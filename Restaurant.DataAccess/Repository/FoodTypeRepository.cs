@@ -1,11 +1,6 @@
 ﻿using Restaurant.DataAccess.Data;
 using Restaurant.DataAccess.Repository.IRepository;
 using Restaurant.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurant.DataAccess.Repository
 {
@@ -17,7 +12,6 @@ namespace Restaurant.DataAccess.Repository
         {
             _db = db;
         }
-
 
         public void Update(FoodType obj)
         {
