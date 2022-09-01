@@ -21,10 +21,11 @@ namespace Restaurant.DataAccess.Repository
             objFromDb.Price = obj.Price;
             objFromDb.CategoryId = obj.CategoryId;
             objFromDb.FoodTypeId = obj.FoodTypeId;
-            if (objFromDb.Image!=null)
+            if (objFromDb.Image != null)
             {
                 objFromDb.Image = obj.Image;
             }
+
         }
     }
 }

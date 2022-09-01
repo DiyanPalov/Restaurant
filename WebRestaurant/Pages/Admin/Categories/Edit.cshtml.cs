@@ -1,42 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Restaurant.DataAccess.Data;
 using Restaurant.DataAccess.Repository.IRepository;
 using Restaurant.Models;
 
-namespace WebRestaurant.Pages.Admin.Categories
+namespace WebRestaurant.Pages.Admin.Categories;
+
+[BindProperties]
+public class EditModel : PageModel
 {
-    [BindProperties]
-    public class EditModel : PageModel
+    private readonly IUnitOfWork _unitOfWork;
+
+    public Category Category { get; set; }
+
+
+    public EditModel(IUnitOfWork unitOfWork)
     {
-        private readonly IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+    }
 
-        public Category Category { get; set; }
+    public void OnGet(int id)
+    {
+        Category = _unitOfWork.Category.GetFirstOrDefault(u=>u.Id==id);
+        //Category = _db.Category.FirstOrDefault(u=>u.Id==id);
+        //Category = _db.Category.SingleOrDefault(u=>u.Id==id);
+        //Category = _db.Category.Where(u => u.Id == id).FirstOrDefault();
+    }
 
-        public EditModel(IUnitOfWork unitOfWork)
+    public async Task<IActionResult> OnPost()
+    {
+        if (Category.Name == Category.DisplayOrder.ToString())
         {
-            _unitOfWork = unitOfWork;
+            ModelState.AddModelError("Category.Name", "The DisplayOrder cannot exactly match the Name.");
         }
-
-        public void OnGet(int id)
+        if (ModelState.IsValid)
         {
-            Category = _unitOfWork.Category.GetFirstOrDefault(u => u.Id == id);
+            _unitOfWork.Category.Update(Category);
+            _unitOfWork.Save();
+            TempData["success"] = "Category updated successfully";
+            return RedirectToPage("Index");
         }
-
-        public async Task<IActionResult> OnPost()
-        {
-            if (Category.Name == Category.DisplayOrder.ToString())
-            {
-                ModelState.AddModelError("Category.Name", "The Display Order cannot exactly match the Name.");
-            }
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Category.Update(Category);
-                _unitOfWork.Save();
-                TempData["success"] = "Category updated successfully";
-                return RedirectToPage("Index");
-            }
-            return Page();
-        }
+        return Page();
     }
 }
